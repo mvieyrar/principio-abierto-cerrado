@@ -1,4 +1,4 @@
-package solid.openClosed;
+package solid.openClosed.proposal;
 
 public class Item {
     private int id;
