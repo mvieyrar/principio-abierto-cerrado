@@ -1,26 +1,28 @@
-package solid.openClosed;
+package solid.openClosed.proposal;
 
 import java.util.ArrayList;
 
 public class Order
 {
     private ArrayList<Item> items = new ArrayList<>();
-    private String country;
-    private String shipping;
+    private String country;    
+    private Shipping shipping;
+    private TaxCalculator taxCalculator;
 
-    public Order(String country, String shipping) {
-        this.country = country;
-        this.shipping = shipping;
-    }
+    public Order(String country, Shipping shipping) {
+		this.country = country;
+		this.shipping = shipping;
+		this.taxCalculator = new TaxCalculator();
+	}
 
-    public double getTotal() {
+	public double getTotal() {
         double total = 0;
 
         for (Item item: items) {
             total += item.getPrice() * item.getQuantity();
         }
-
-        total += total * getTaxRate();
+        
+        total += taxCalculator.getTaxRate(country);
 
         return total;
     }
@@ -34,41 +36,10 @@ public class Order
 
         return weight;
     }
-
+    
     public double getShippingCost() {
-        if (shipping == "ground") {
-            if (getTotal() > 100) {
-                return 0;
-            }
-
-            return Double.max(10, getTotalWeight() * 1.5);
-        }
-
-        if (shipping == "air") {
-            return Double.max(20, getTotalWeight() * 3);
-        }
-
-        if (shipping == "sea") {
-            return Double.max(15, getTotalWeight() * 2);
-        }
-
-        return 0;
-    }
-
-    public double getTaxRate() {
-        if (country == "MX") {
-            return 0.16;
-        }
-        else if (country == "US") {
-            return 0.07;
-        }
-        else if (country == "EU") {
-            return 0.20;
-        }
-        else {
-            return 0;
-        }
-    }
+    	return shipping.getCost(this);	
+    }    
 
     public void addItem(Item item) {
         items.add(item);
@@ -82,13 +53,12 @@ public class Order
         this.country = country;
     }
 
-    public String getShipping()
-    {
-        return shipping;
-    }
+	public Shipping getShipping() {
+		return shipping;
+	}
 
-    public void setShipping(String shipping)
-    {
-        this.shipping = shipping;
-    }
+	public void setShipping(Shipping shipping) {
+		this.shipping = shipping;
+	}
+    
 }
